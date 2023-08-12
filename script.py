@@ -1,6 +1,7 @@
 import os
 import requests
 from dotenv import load_dotenv
+from urllib.parse import urlsplit
 
 
 def shorten_link(token, url):
@@ -15,6 +16,10 @@ def shorten_link(token, url):
 
 
 def count_clicks(token, link):
+    split_link = urlsplit(link)
+    if split_link.scheme:
+        link = f'{split_link.netloc}{split_link.path}'
+
     header = {"Authorization": f"Bearer {token}"}
     user_url = f'https://api-ssl.bitly.com/v4/bitlinks/{link}/clicks/summary'
 
@@ -32,7 +37,7 @@ def is_bitlink(link, token):
 
 
 def main():
-    token = os.environ['TOKEN']
+    token = os.environ['BITLY_TOKEN']
     url = input('Enter your url: ')
     try:
         if is_bitlink(url, token):
@@ -45,7 +50,7 @@ def main():
         print('HTTP Error: ', e)
 
 
-load_dotenv('data.env')
 
 if __name__ == '__main__':
+    load_dotenv('data.env')
     main()
