@@ -17,9 +17,7 @@ def shorten_link(token, url):
 
 def count_clicks(token, link):
     split_link = urlsplit(link)
-    if split_link.scheme:
-        link = f'{split_link.netloc}{split_link.path}'
-
+    link = f'{split_link.netloc}{split_link.path}'
     header = {"Authorization": f"Bearer {token}"}
     user_url = f'https://api-ssl.bitly.com/v4/bitlinks/{link}/clicks/summary'
 
@@ -30,13 +28,17 @@ def count_clicks(token, link):
 
 
 def is_bitlink(link, token):
+    split_link = urlsplit(link)
+    link = f'{split_link.netloc}{split_link.path}'
     header = {"Authorization": f"Bearer {token}"}
     user_url = f'https://api-ssl.bitly.com/v4/bitlinks/{link}'
+    
     response = requests.get(user_url, headers=header)
     return response.ok
 
 
-def main():
+if __name__ == '__main__':
+    load_dotenv('data.env')
     token = os.environ['BITLY_TOKEN']
     url = input('Enter your url: ')
     try:
@@ -48,9 +50,3 @@ def main():
             print('Your link: ', short_link)
     except requests.exceptions.HTTPError as e:
         print('HTTP Error: ', e)
-
-
-
-if __name__ == '__main__':
-    load_dotenv('data.env')
-    main()
